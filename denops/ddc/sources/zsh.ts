@@ -4,14 +4,15 @@ import {
   Context,
   Denops,
   SourceOptions,
-} from "https://deno.land/x/ddc_vim@v0.0.4/types.ts";
+} from "https://deno.land/x/ddc_vim@v0.0.5/types.ts";
 
 export class Source extends BaseSource {
-  async getCompletePosition(
+  getCompletePosition(
     _denops: Denops,
     context: Context,
-    _options: SourceOptions,
-    _params: Record<string, unknown>,
+    options: DdcOptions,
+    _sourceOptions: SourceOptions,
+    _sourceParams: Record<string, unknown>,
   ): Promise<number> {
     const matchPos = context.input.search(/\S+$/);
     const completePos = matchPos != null ? matchPos : -1;
@@ -22,7 +23,8 @@ export class Source extends BaseSource {
     denops: Denops,
     context: Context,
     _options: SourceOptions,
-    _params: Record<string, unknown>,
+    _sourceOptions: SourceOptions,
+    _sourceParams: Record<string, unknown>,
   ): Promise<Candidate[]> {
     // Note: denops.vim does not have options support...
     const runtimepath =
