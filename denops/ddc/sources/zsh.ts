@@ -3,9 +3,9 @@ import {
   Candidate,
   Context,
   DdcOptions,
-  Denops,
   SourceOptions,
 } from "https://deno.land/x/ddc_vim@v0.0.6/types.ts";
+import { Denops, } from "https://deno.land/x/ddc_vim@v0.0.9/deps.ts";
 
 export class Source extends BaseSource {
   getCompletePosition(
