@@ -23,7 +23,7 @@ export class Source extends BaseSource {
   async gatherCandidates(
     denops: Denops,
     context: Context,
-    _options: SourceOptions,
+    _options: DdcOptions,
     _sourceOptions: SourceOptions,
     _sourceParams: Record<string, unknown>,
     _completeStr: string,
