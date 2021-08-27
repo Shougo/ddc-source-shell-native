@@ -2,48 +2,35 @@ import {
   BaseSource,
   Candidate,
   Context,
-  DdcOptions,
-  SourceOptions,
-} from "https://deno.land/x/ddc_vim@v0.0.11/types.ts#^";
-import { Denops, } from "https://deno.land/x/ddc_vim@v0.0.11/deps.ts#^";
+} from "https://deno.land/x/ddc_vim@v0.3.0/types.ts#^";
+import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v0.3.0/deps.ts#^";
 
 export class Source extends BaseSource {
-  getCompletePosition(
-    _denops: Denops,
-    context: Context,
-    options: DdcOptions,
-    _sourceOptions: SourceOptions,
-    _sourceParams: Record<string, unknown>,
-  ): Promise<number> {
-    const matchPos = context.input.search(/\S+$/);
+  getCompletePosition(args: {
+    context: Context;
+  }): Promise<number> {
+    const matchPos = args.context.input.search(/\S+$/);
     const completePos = matchPos != null ? matchPos : -1;
     return Promise.resolve(completePos);
   }
 
-  async gatherCandidates(
-    denops: Denops,
-    context: Context,
-    _options: DdcOptions,
-    _sourceOptions: SourceOptions,
-    _sourceParams: Record<string, unknown>,
-    _completeStr: string,
-  ): Promise<Candidate[]> {
-    // Note: denops.vim does not have options support...
-    const runtimepath =
-      (await denops.call("getbufvar", 1, "&runtimepath")) as string;
-    const capture =
-      (await denops.call(
-        "globpath",
-        runtimepath,
-        "bin/capture.zsh",
-        1,
-        1,
-      )) as string[];
+  async gatherCandidates(args: {
+    denops: Denops;
+    context: Context;
+  }): Promise<Candidate[]> {
+    const runtimepath = op.runtimepath.getGlobal(args.denops);
+    const capture = await fn.globpath(
+      args.denops,
+      runtimepath,
+      "bin/capture.zsh",
+      1,
+      1,
+    ) as string[];
     if (capture.length < 0) {
       return [];
     }
     const p = Deno.run({
-      cmd: ["zsh", capture[0], context.input],
+      cmd: ["zsh", capture[0], args.context.input],
       stdout: "piped",
       stderr: "piped",
       stdin: "null",
