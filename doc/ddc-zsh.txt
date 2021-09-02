@@ -1,0 +1,47 @@
+*ddc-zsh.txt*	Zsh completion for ddc.vim
+
+Author: Shougo <Shougo.Matsu at gmail.com>
+License: MIT license
+
+CONTENTS						*ddc-zsh-contents*
+
+Introduction		|ddc-zsh-introduction|
+Install			|ddc-zsh-install|
+Examples		|ddc-zsh-examples|
+
+
+==============================================================================
+INTRODUCTION					*ddc-zsh-introduction*
+
+This source collects candidates from zsh builtin completion.
+
+
+==============================================================================
+INSTALL							*ddc-zsh-install*
+
+Please install both "ddc.vim" and "denops.vim".
+
+https://github.com/Shougo/ddc.vim
+https://github.com/vim-denops/denops.vim
+
+You must install "zsh" and enable "zsh/zpty" module >
+
+	zmodload zsh/zpty
+
+
+==============================================================================
+EXAMPLES						*ddc-zsh-examples*
+>
+It saves compdump file in `$DEOPLETE_ZSH_CACHE_DIR` or `$XDG_CACHE_HOME` or
+`$HOME/cache` directory.
+>
+	" Use zsh source.
+	call ddc#custom#patch_global('sources', ['zsh'])
+	call ddc#custom#patch_global('sourceOptions', {
+	      \ '_': {'matchers': ['matcher_head']},
+	      \ 'zsh': {'mark': 'Z'},
+	      \ })
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:

@@ -32,6 +32,7 @@ call ddc#custom#patch_global('sourceOptions', {
       \ })
 ```
 
+
 ## Original code
 
 It includes
