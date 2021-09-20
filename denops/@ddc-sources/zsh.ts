@@ -2,10 +2,10 @@ import {
   BaseSource,
   Candidate,
   Context,
-} from "https://deno.land/x/ddc_vim@v0.3.0/types.ts#^";
-import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v0.3.0/deps.ts#^";
+} from "https://deno.land/x/ddc_vim@v0.13.0/types.ts#^";
+import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v0.13.0/deps.ts#^";
 
-export class Source extends BaseSource {
+export class Source extends BaseSource<{}> {
   getCompletePosition(args: {
     context: Context;
   }): Promise<number> {
@@ -46,4 +46,6 @@ export class Source extends BaseSource {
 
     return candidates;
   }
+
+  params(): {} { return {}; }
 }
