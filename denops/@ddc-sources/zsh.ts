@@ -41,6 +41,7 @@ export class Source extends BaseSource<{}> {
     });
     await p.status();
     const candidates = new TextDecoder().decode(await p.output()).split(/\r?\n/)
+      .filter((line) => line.length != 0)
       .map((line) => {
         const pieces = line.split(" -- ");
         return pieces.length <= 1
