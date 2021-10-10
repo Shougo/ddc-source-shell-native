@@ -18,7 +18,7 @@ export class Source extends BaseSource<{}> {
     denops: Denops;
     context: Context;
   }): Promise<Candidate[]> {
-    const runtimepath = op.runtimepath.getGlobal(args.denops);
+    const runtimepath = await op.runtimepath.getGlobal(args.denops);
     const capture = await fn.globpath(
       args.denops,
       runtimepath,
@@ -29,8 +29,12 @@ export class Source extends BaseSource<{}> {
     if (capture.length < 0) {
       return [];
     }
+    const existsDeolInput = await fn.exists(args.denops, "*deol#get_input");
+    const input = existsDeolInput
+      ? await args.denops.call("deol#get_input") as string
+      : args.context.input;
     const p = Deno.run({
-      cmd: ["zsh", capture[0], args.context.input],
+      cmd: ["zsh", capture[0], input],
       stdout: "piped",
       stderr: "piped",
       stdin: "null",
@@ -47,5 +51,7 @@ export class Source extends BaseSource<{}> {
     return candidates;
   }
 
-  params(): {} { return {}; }
+  params(): {} {
+    return {};
+  }
 }
