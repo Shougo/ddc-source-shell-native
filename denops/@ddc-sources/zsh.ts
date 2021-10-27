@@ -2,8 +2,8 @@ import {
   BaseSource,
   Candidate,
   Context,
-} from "https://deno.land/x/ddc_vim@v0.13.0/types.ts#^";
-import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v0.13.0/deps.ts#^";
+} from "https://deno.land/x/ddc_vim@v0.17.0/types.ts#^";
+import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v0.17.0/deps.ts#^";
 
 export class Source extends BaseSource<{}> {
   getCompletePosition(args: {
@@ -15,8 +15,8 @@ export class Source extends BaseSource<{}> {
   }
 
   async gatherCandidates(args: {
-    denops: Denops;
-    context: Context;
+    denops: Denops,
+    context: Context,
   }): Promise<Candidate[]> {
     const runtimepath = await op.runtimepath.getGlobal(args.denops);
     const capture = await fn.globpath(
