@@ -2,22 +2,21 @@
 
 Zsh completion for ddc.vim
 
-
 ## Required
 
 ### denops.vim
+
 https://github.com/vim-denops/denops.vim
 
 ### ddc.vim
-https://github.com/Shougo/ddc.vim
 
+https://github.com/Shougo/ddc.vim
 
 ### zsh and zsh/zpty module
 
 ```zsh
 zmodload zsh/zpty
 ```
-
 
 ## Configuration
 
@@ -31,7 +30,6 @@ call ddc#custom#patch_global('sourceOptions', {
       \ 'zsh': {'mark': 'Z'},
       \ })
 ```
-
 
 ## Original code
 

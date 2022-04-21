@@ -1,11 +1,13 @@
 import {
   BaseSource,
-  Candidate,
   Context,
-} from "https://deno.land/x/ddc_vim@v0.17.0/types.ts#^";
-import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v0.17.0/deps.ts#^";
+  Item,
+} from "https://deno.land/x/ddc_vim@v2.2.0/types.ts";
+import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v2.2.0/deps.ts";
 
-export class Source extends BaseSource<{}> {
+type Params = Record<never, never>;
+
+export class Source extends BaseSource<Params> {
   getCompletePosition(args: {
     context: Context;
   }): Promise<number> {
@@ -14,10 +16,10 @@ export class Source extends BaseSource<{}> {
     return Promise.resolve(completePos);
   }
 
-  async gatherCandidates(args: {
-    denops: Denops,
-    context: Context,
-  }): Promise<Candidate[]> {
+  async gather(args: {
+    denops: Denops;
+    context: Context;
+  }): Promise<Item[]> {
     const runtimepath = await op.runtimepath.getGlobal(args.denops);
     const capture = await fn.globpath(
       args.denops,
@@ -52,7 +54,7 @@ export class Source extends BaseSource<{}> {
     return candidates;
   }
 
-  params(): {} {
+  params(): Params {
     return {};
   }
 }
