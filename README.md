@@ -1,4 +1,4 @@
-# ddc-zsh
+# ddc-source-zsh
 
 Zsh completion for ddc.vim
 
