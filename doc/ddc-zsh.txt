@@ -35,11 +35,9 @@ EXAMPLES					*ddc-source-zsh-examples*
 It saves compdump file in `$DEOPLETE_ZSH_CACHE_DIR` or `$XDG_CACHE_HOME` or
 `$HOME/cache` directory.
 >
-	" Use zsh source.
 	call ddc#custom#patch_global('sources', ['zsh'])
 	call ddc#custom#patch_global('sourceOptions', {
-	      \ '_': {'matchers': ['matcher_head']},
-	      \ 'zsh': {'mark': 'Z'},
+	      \   'zsh': #{ mark: 'Z' },
 	      \ })
 <
 

@@ -25,9 +25,8 @@ It saves compdump file in `$DEOPLETE_ZSH_CACHE_DIR` or `$XDG_CACHE_HOME` or
 
 ```vim
 call ddc#custom#patch_global('sources', ['zsh'])
-call ddc#custom#patch_global('sourceOptions', {
-      \ '_': {'matchers': ['matcher_head']},
-      \ 'zsh': {'mark': 'Z'},
+call ddc#custom#patch_global('sourceOptions', #{
+      \   zsh: #{ mark: 'Z' },
       \ })
 ```
 
