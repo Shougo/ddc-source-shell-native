@@ -8,7 +8,7 @@ import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v3.2.0/deps.ts";
 type Params = Record<never, never>;
 
 export class Source extends BaseSource<Params> {
-  getCompletePosition(args: {
+  override getCompletePosition(args: {
     context: Context;
   }): Promise<number> {
     const matchPos = args.context.input.search(/\S+$/);
@@ -16,7 +16,7 @@ export class Source extends BaseSource<Params> {
     return Promise.resolve(completePos);
   }
 
-  async gather(args: {
+  override async gather(args: {
     denops: Denops;
     context: Context;
   }): Promise<Item[]> {
@@ -54,7 +54,7 @@ export class Source extends BaseSource<Params> {
     return candidates;
   }
 
-  params(): Params {
+  override params(): Params {
     return {};
   }
 }
