@@ -2,8 +2,8 @@ import {
   BaseSource,
   Context,
   Item,
-} from "https://deno.land/x/ddc_vim@v3.2.0/types.ts";
-import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v3.2.0/deps.ts";
+} from "https://deno.land/x/ddc_vim@v3.4.0/types.ts";
+import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v3.4.0/deps.ts";
 
 type Params = Record<never, never>;
 
@@ -35,14 +35,16 @@ export class Source extends BaseSource<Params> {
     const input = existsDeolInput
       ? await args.denops.call("deol#get_input") as string
       : args.context.input;
-    const p = Deno.run({
-      cmd: ["zsh", capture[0], input],
-      stdout: "piped",
-      stderr: "piped",
-      stdin: "null",
-    });
-    await p.status();
-    const candidates = new TextDecoder().decode(await p.output()).split(/\r?\n/)
+
+    const command = new Deno.Command(
+      "zsh", {
+        args: [capture[0], input],
+      }
+    );
+
+    const { stdout } = await command.output();
+
+    const items = new TextDecoder().decode(stdout).split(/\r?\n/)
       .filter((line) => line.length != 0)
       .map((line) => {
         const pieces = line.split(" -- ");
@@ -51,7 +53,7 @@ export class Source extends BaseSource<Params> {
           : { word: pieces[0], info: pieces[1] };
       });
 
-    return candidates;
+    return items;
   }
 
   override params(): Params {

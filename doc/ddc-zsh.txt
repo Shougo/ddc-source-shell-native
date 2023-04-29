@@ -13,7 +13,7 @@ Examples		|ddc-source-zsh-examples|
 ==============================================================================
 INTRODUCTION					*ddc-source-zsh-introduction*
 
-This source collects candidates from zsh builtin completion.
+This source collects items from zsh builtin completion.
 
 
 ==============================================================================
