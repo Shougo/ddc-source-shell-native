@@ -12,7 +12,7 @@ export class Source extends BaseSource<Params> {
     context: Context;
   }): Promise<number> {
     const matchPos = args.context.input.search(/\S+$/);
-    const completePos = matchPos != null ? matchPos : -1;
+    const completePos = matchPos !== null ? matchPos : -1;
     return Promise.resolve(completePos);
   }
 
@@ -37,15 +37,16 @@ export class Source extends BaseSource<Params> {
       : args.context.input;
 
     const command = new Deno.Command(
-      "zsh", {
+      "zsh",
+      {
         args: [capture[0], input],
-      }
+      },
     );
 
     const { stdout } = await command.output();
 
     const items = new TextDecoder().decode(stdout).split(/\r?\n/)
-      .filter((line) => line.length != 0)
+      .filter((line) => line.length !== 0)
       .map((line) => {
         const pieces = line.split(" -- ");
         return pieces.length <= 1
