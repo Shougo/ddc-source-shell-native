@@ -40,6 +40,7 @@ export class Source extends BaseSource<Params> {
       "zsh",
       {
         args: [capture[0], input],
+        cwd: await fn.getcwd(args.denops) as string,
       },
     );
 
