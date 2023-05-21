@@ -8,6 +8,14 @@ import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v3.4.0/deps.ts";
 type Params = Record<never, never>;
 
 export class Source extends BaseSource<Params> {
+  _existsZsh = false;
+
+  override async onInit(args: {
+    denops: Denops;
+  }): Promise<void> {
+    this._existsZsh = await fn.executable(args.denops, "zsh") as boolean;
+  }
+
   override getCompletePosition(args: {
     context: Context;
   }): Promise<number> {
@@ -20,6 +28,10 @@ export class Source extends BaseSource<Params> {
     denops: Denops;
     context: Context;
   }): Promise<Item[]> {
+    if (!this._existsZsh) {
+      return [];
+    }
+
     const runtimepath = await op.runtimepath.getGlobal(args.denops);
     const capture = await fn.globpath(
       args.denops,
