@@ -43,8 +43,7 @@ export class Source extends BaseSource<Params> {
     if (capture.length < 0) {
       return [];
     }
-    const existsDeolInput = await fn.exists(args.denops, "*deol#get_input");
-    const input = existsDeolInput
+    const input = await fn.exists(args.denops, "*deol#get_input")
       ? await args.denops.call("deol#get_input") as string
       : args.context.input;
 
