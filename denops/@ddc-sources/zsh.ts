@@ -44,7 +44,8 @@ export class Source extends BaseSource<Params> {
       return [];
     }
 
-    let input = await fn.exists(args.denops, "*deol#get_input")
+    let input = args.context.mode !== "c" &&
+        await fn.exists(args.denops, "*deol#get_input")
       ? await args.denops.call("deol#get_input") as string
       : args.context.input;
 
