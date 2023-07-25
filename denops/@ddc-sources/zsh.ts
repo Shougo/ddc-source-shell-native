@@ -13,7 +13,7 @@ export class Source extends BaseSource<Params> {
   override async onInit(args: {
     denops: Denops;
   }): Promise<void> {
-    this._existsZsh = await fn.executable(args.denops, "zsh") as boolean;
+    this._existsZsh = await fn.executable(args.denops, "zsh") !== 0;
   }
 
   override getCompletePosition(args: {
@@ -33,8 +33,8 @@ export class Source extends BaseSource<Params> {
     }
 
     const runtimepath = await op.runtimepath.getGlobal(args.denops);
-    const capture = await fn.globpath(
-      args.denops,
+    const capture = await args.denops.call(
+      "globpath",
       runtimepath,
       "bin/capture.zsh",
       1,
