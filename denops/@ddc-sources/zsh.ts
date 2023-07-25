@@ -77,8 +77,6 @@ export class Source extends BaseSource<Params> {
         }
       }
 
-      proc.kill();
-
       items = stdout.map((line) => {
         const pieces = line.split(" -- ");
         return pieces.length <= 1
