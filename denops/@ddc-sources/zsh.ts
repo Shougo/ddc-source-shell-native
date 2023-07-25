@@ -2,8 +2,9 @@ import {
   BaseSource,
   Context,
   Item,
-} from "https://deno.land/x/ddc_vim@v3.9.0/types.ts";
-import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v3.9.0/deps.ts";
+} from "https://deno.land/x/ddc_vim@v3.9.1/types.ts";
+import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v3.9.1/deps.ts";
+import { TextLineStream } from "https://deno.land/std@0.195.0/streams/mod.ts";
 
 type Params = Record<never, never>;
 
@@ -54,29 +55,67 @@ export class Source extends BaseSource<Params> {
       input = input.slice(1);
     }
 
-    const command = new Deno.Command(
-      "zsh",
-      {
-        args: [capture[0], input],
-        cwd: await fn.getcwd(args.denops) as string,
-      },
-    );
+    const cmd = "zsh";
+    let items: Item[] = [];
+    try {
+      const proc = new Deno.Command(
+        cmd,
+        {
+          args: [capture[0], input],
+          stdout: "piped",
+          stderr: "piped",
+          stdin: "null",
+          cwd: await fn.getcwd(args.denops) as string,
+        },
+      ).spawn();
 
-    const { stdout } = await command.output();
+      // NOTE: In Vim, await command.output() does not work.
+      const stdout = [];
+      for await (const line of iterLine(proc.stdout)) {
+        if (line.length !== 0) {
+          stdout.push(line);
+        }
+      }
 
-    const items = new TextDecoder().decode(stdout).split(/\r?\n/)
-      .filter((line) => line.length !== 0)
-      .map((line) => {
+      items = stdout.map((line) => {
         const pieces = line.split(" -- ");
         return pieces.length <= 1
           ? { word: line }
           : { word: pieces[0], info: pieces[1] };
       });
+    } catch (e) {
+      await args.denops.call(
+        "ddu#util#print_error",
+        `Run ${cmd} is failed.`,
+      );
+
+      if (e instanceof Error) {
+        await args.denops.call(
+          "ddu#util#print_error",
+          e.message,
+        );
+      }
+    }
 
     return items;
   }
 
   override params(): Params {
     return {};
+  }
+}
+
+async function* iterLine(r: ReadableStream<Uint8Array>): AsyncIterable<string> {
+  const lines = r
+    .pipeThrough(new TextDecoderStream(), {
+      preventCancel: false,
+      preventClose: false,
+    })
+    .pipeThrough(new TextLineStream());
+
+  for await (const line of lines) {
+    if ((line as string).length) {
+      yield line as string;
+    }
   }
 }
