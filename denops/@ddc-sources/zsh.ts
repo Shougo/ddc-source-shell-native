@@ -2,8 +2,8 @@ import {
   BaseSource,
   Context,
   Item,
-} from "https://deno.land/x/ddc_vim@v3.4.0/types.ts";
-import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v3.4.0/deps.ts";
+} from "https://deno.land/x/ddc_vim@v3.9.0/types.ts";
+import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v3.9.0/deps.ts";
 
 type Params = Record<never, never>;
 
@@ -43,9 +43,15 @@ export class Source extends BaseSource<Params> {
     if (capture.length < 0) {
       return [];
     }
-    const input = await fn.exists(args.denops, "*deol#get_input")
+
+    let input = await fn.exists(args.denops, "*deol#get_input")
       ? await args.denops.call("deol#get_input") as string
       : args.context.input;
+
+    // For ":!" completion in command line
+    if (args.context.mode === "c" && input.startsWith("!")) {
+      input = input.slice(1);
+    }
 
     const command = new Deno.Command(
       "zsh",

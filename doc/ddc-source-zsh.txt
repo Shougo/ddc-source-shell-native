@@ -3,7 +3,7 @@
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
-CONTENTS					*ddc-source-zsh-contents*
+CONTENTS                                             *ddc-source-zsh-contents*
 
 Introduction		|ddc-source-zsh-introduction|
 Install			|ddc-source-zsh-install|
@@ -11,13 +11,13 @@ Examples		|ddc-source-zsh-examples|
 
 
 ==============================================================================
-INTRODUCTION					*ddc-source-zsh-introduction*
+INTRODUCTION                                     *ddc-source-zsh-introduction*
 
 This source collects items from zsh builtin completion.
 
 
 ==============================================================================
-INSTALL						*ddc-source-zsh-install*
+INSTALL                                               *ddc-source-zsh-install*
 
 Please install both "ddc.vim" and "denops.vim".
 
@@ -32,7 +32,7 @@ It saves compdump file in `$DEOPLETE_ZSH_CACHE_DIR` or `$XDG_CACHE_HOME` or
 `$HOME/cache` directory.
 
 ==============================================================================
-EXAMPLES					*ddc-source-zsh-examples*
+EXAMPLES                                             *ddc-source-zsh-examples*
 >
 	call ddc#custom#patch_global('sources', ['zsh'])
 	call ddc#custom#patch_global('sourceOptions', {
