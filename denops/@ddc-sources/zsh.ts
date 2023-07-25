@@ -87,13 +87,13 @@ export class Source extends BaseSource<Params> {
       });
     } catch (e) {
       await args.denops.call(
-        "ddu#util#print_error",
+        "ddc#util#print_error",
         `Run ${cmd} is failed.`,
       );
 
       if (e instanceof Error) {
         await args.denops.call(
-          "ddu#util#print_error",
+          "ddc#util#print_error",
           e.message,
         );
       }
