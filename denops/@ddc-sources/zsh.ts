@@ -107,10 +107,7 @@ export class Source extends BaseSource<Params> {
 
 async function* iterLine(r: ReadableStream<Uint8Array>): AsyncIterable<string> {
   const lines = r
-    .pipeThrough(new TextDecoderStream(), {
-      preventCancel: false,
-      preventClose: false,
-    })
+    .pipeThrough(new TextDecoderStream())
     .pipeThrough(new TextLineStream());
 
   for await (const line of lines) {
