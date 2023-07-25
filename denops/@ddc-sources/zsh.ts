@@ -6,7 +6,9 @@ import {
 import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v3.9.1/deps.ts";
 import { TextLineStream } from "https://deno.land/std@0.195.0/streams/mod.ts";
 
-type Params = Record<never, never>;
+type Params = {
+  fpath: string | string[];
+};
 
 export class Source extends BaseSource<Params> {
   _existsZsh = false;
@@ -28,6 +30,7 @@ export class Source extends BaseSource<Params> {
   override async gather(args: {
     denops: Denops;
     context: Context;
+    sourceParams: Params;
   }): Promise<Item[]> {
     if (!this._existsZsh) {
       return [];
@@ -56,6 +59,11 @@ export class Source extends BaseSource<Params> {
     }
 
     const cmd = "zsh";
+    const env: Record<string, string> = {};
+    const fpath = args.sourceParams.fpath;
+    if (fpath !== "") {
+      env.FPATH = typeof fpath === "string" ? fpath : fpath.join(":");
+    }
     let items: Item[] = [];
     try {
       const proc = new Deno.Command(
@@ -66,6 +74,7 @@ export class Source extends BaseSource<Params> {
           stderr: "piped",
           stdin: "null",
           cwd: await fn.getcwd(args.denops) as string,
+          env,
         },
       ).spawn();
 
@@ -103,7 +112,9 @@ export class Source extends BaseSource<Params> {
   }
 
   override params(): Params {
-    return {};
+    return {
+      fpath: "",
+    };
   }
 }
 
