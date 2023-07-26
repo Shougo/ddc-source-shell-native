@@ -59,59 +59,64 @@ export class Source extends BaseSource<Params> {
     }
 
     const cmd = "zsh";
-    let items: Item[] = [];
-    try {
-      const proc = new Deno.Command(
-        cmd,
-        {
-          args: [capture[0], input],
-          stdout: "piped",
-          stderr: "piped",
-          stdin: "null",
-          cwd: await fn.getcwd(args.denops) as string,
-          env: args.sourceParams.envs,
-        },
-      ).spawn();
 
-      // NOTE: In Vim, await command.output() does not work.
-      const stdout = [];
-      let replaceLine = true;
-      for await (let line of iterLine(proc.stdout)) {
-        if (line.length === 0) {
-          continue;
-        }
+    const proc = new Deno.Command(
+      cmd,
+      {
+        args: [capture[0], input],
+        stdout: "piped",
+        stderr: "piped",
+        stdin: "null",
+        cwd: await fn.getcwd(args.denops) as string,
+        env: args.sourceParams.envs,
+      },
+    ).spawn();
 
-        if (replaceLine) {
-          // NOTE: Replace the first line.  It may includes garbage texts.
-          line = line.replace(/\r\r.*\[J/, "");
-          if (line.startsWith(input)) {
-            line = line.slice(input.length);
-          }
-          replaceLine = false;
-        }
-
-        stdout.push(line);
+    // NOTE: In Vim, await command.output() does not work.
+    const stdout = [];
+    let replaceLine = true;
+    for await (let line of iterLine(proc.stdout)) {
+      if (line.length === 0) {
+        continue;
       }
 
-      items = stdout.map((line) => {
-        const pieces = line.split(" -- ");
-        return pieces.length <= 1
-          ? { word: line }
-          : { word: pieces[0], info: pieces[1] };
-      });
-    } catch (e) {
+      if (replaceLine) {
+        // NOTE: Replace the first line.  It may includes garbage texts.
+        line = line.replace(/\r\r.*\[J/, "");
+        if (line.startsWith(input)) {
+          line = line.slice(input.length);
+        }
+        replaceLine = false;
+      }
+
+      stdout.push(line);
+    }
+
+    const items = stdout.map((line) => {
+      const pieces = line.split(" -- ");
+      return pieces.length <= 1
+        ? { word: line }
+        : { word: pieces[0], info: pieces[1] };
+    });
+
+    proc.status.then(async (s) => {
+      if (s.success) {
+        return;
+      }
+
       await args.denops.call(
         "ddc#util#print_error",
-        `Run ${cmd} is failed.`,
+        `Run ${cmd} is failed with exit code ${s.code}.`,
       );
-
-      if (e instanceof Error) {
-        await args.denops.call(
-          "ddc#util#print_error",
-          e.message,
-        );
+      const err = [];
+      for await (const line of iterLine(proc.stderr)) {
+        err.push(line);
       }
-    }
+      await args.denops.call(
+        "ddc#util#print_error",
+        err.join("\n"),
+      );
+    });
 
     return items;
   }
