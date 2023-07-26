@@ -75,10 +75,22 @@ export class Source extends BaseSource<Params> {
 
       // NOTE: In Vim, await command.output() does not work.
       const stdout = [];
-      for await (const line of iterLine(proc.stdout)) {
-        if (line.length !== 0) {
-          stdout.push(line);
+      let replaceLine = true;
+      for await (let line of iterLine(proc.stdout)) {
+        if (line.length === 0) {
+          continue;
         }
+
+        if (replaceLine) {
+          // NOTE: Replace the first line.  It may includes garbage texts.
+          line = line.replace(/\r\r.*\[J/, "");
+          if (line.startsWith(input)) {
+            line = line.slice(input.length);
+          }
+          replaceLine = false;
+        }
+
+        stdout.push(line);
       }
 
       items = stdout.map((line) => {
