@@ -12,14 +12,6 @@ type Params = {
 };
 
 export class Source extends BaseSource<Params> {
-  _existsZsh = false;
-
-  override async onInit(args: {
-    denops: Denops;
-  }): Promise<void> {
-    this._existsZsh = await fn.executable(args.denops, "zsh") !== 0;
-  }
-
   override getCompletePosition(args: {
     context: Context;
   }): Promise<number> {
@@ -97,6 +89,7 @@ export class Source extends BaseSource<Params> {
       zsh: " -- ",
       fish: "\t",
     }[shell] ?? "";
+
     const items = stdout.map((line) => {
       if (delimiter === "") {
         return { word: line };
