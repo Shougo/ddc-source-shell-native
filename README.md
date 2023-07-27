@@ -1,6 +1,6 @@
-# ddc-source-shell-capture
+# ddc-source-shell-native
 
-Shell builtin completion for ddc.vim
+Shell native completion for ddc.vim
 
 ## Required
 
@@ -23,9 +23,12 @@ One of the followings
 ## Configuration
 
 ```vim
-call ddc#custom#patch_global('sources', ['shell-capture'])
-call ddc#custom#patch_global('sourceOptions', {
-      \   'shell-capture': #{ shell: 'fish', mark: 'fish' },
+call ddc#custom#patch_global('sources', ['shell-native'])
+call ddc#custom#patch_global('sourceOptions', #{
+      \   shell-native: #{ mark: 'fish' },
+      \ })
+call ddc#custom#patch_global('sourceParams', #{
+      \   shell-native: #{ shell: 'fish' },
       \ })
 ```
 

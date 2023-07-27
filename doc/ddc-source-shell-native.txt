@@ -1,0 +1,64 @@
+*ddc-source-shell-native.txt*	Native shell completion for ddc.vim
+
+Author: Shougo <Shougo.Matsu at gmail.com>
+License: MIT license
+
+CONTENTS                                    *ddc-source-shell-native-contents*
+
+Introduction		|ddc-source-shell-native-introduction|
+Install			|ddc-source-shell-native-install|
+Examples		|ddc-source-shell-native-examples|
+
+
+==============================================================================
+INTRODUCTION                            *ddc-source-shell-native-introduction*
+
+This source captures items from native completion of shells (fish, xonsh, or
+zsh).
+
+
+==============================================================================
+INSTALL                                      *ddc-source-shell-native-install*
+
+Please install both "ddc.vim" and "denops.vim".
+
+https://github.com/Shougo/ddc.vim
+https://github.com/vim-denops/denops.vim
+
+You also need one of fish, xonsh, or zsh.
+NOTE: Zsh also requires enable "zsh/zpty" module.
+>
+	zmodload zsh/zpty
+<
+
+==============================================================================
+PARAMS                                        *ddc-source-shell-native-params*
+
+                                         *ddc-source-shell-native-param-shell*
+shell		(string)
+		A required parameter to specify the shell to be used.
+		Supported values are fish, xonsh, and zsh.
+
+		NOTE: Zsh saves compdump file in `$DEOPLETE_ZSH_CACHE_DIR` or
+		`$XDG_CACHE_HOME` or `$HOME/cache` directory.
+
+                                          *ddc-source-shell-native-param-envs*
+envs		(Record<string, string>)
+		The environment variables to be passed to
+		|ddc-source-shell-native-param-shell|.
+
+
+==============================================================================
+EXAMPLES                                    *ddc-source-shell-native-examples*
+>
+	call ddc#custom#patch_global('sources', ['shell-native'])
+	call ddc#custom#patch_global('sourceOptions', #{
+	      \   shell-native: #{ mark: 'fish' },
+	      \ })
+	call ddc#custom#patch_global('sourceParams', #{
+	      \   shell-native: #{ shell: 'fish' },
+	      \ })
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:
