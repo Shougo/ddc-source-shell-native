@@ -1,51 +1,55 @@
-*ddc-source-zsh.txt*	Zsh completion for ddc.vim
+*ddc-source-shell-capture.txt*	Capture shell completion for ddc.vim
 
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
-CONTENTS                                             *ddc-source-zsh-contents*
+CONTENTS                                   *ddc-source-shell-capture-contents*
 
-Introduction		|ddc-source-zsh-introduction|
-Install			|ddc-source-zsh-install|
-Examples		|ddc-source-zsh-examples|
-
-
-==============================================================================
-INTRODUCTION                                     *ddc-source-zsh-introduction*
-
-This source collects items from zsh builtin completion.
+Introduction		|ddc-source-shell-capture-introduction|
+Install			|ddc-source-shell-capture-install|
+Examples		|ddc-source-shell-capture-examples|
 
 
 ==============================================================================
-INSTALL                                               *ddc-source-zsh-install*
+INTRODUCTION                           *ddc-source-shell-capture-introduction*
+
+This source captures items from builtin completion of shells (fish, xonsh, or
+zsh).
+
+
+==============================================================================
+INSTALL                                     *ddc-source-shell-capture-install*
 
 Please install both "ddc.vim" and "denops.vim".
 
 https://github.com/Shougo/ddc.vim
 https://github.com/vim-denops/denops.vim
 
-You must install "zsh" and enable "zsh/zpty" module >
+You also need one of fish, xonsh, or zsh. Zsh also requires enable "zsh/zpty"
+module.
 
 	zmodload zsh/zpty
 
-It saves compdump file in `$DEOPLETE_ZSH_CACHE_DIR` or `$XDG_CACHE_HOME` or
-`$HOME/cache` directory.
-
-
 ==============================================================================
-PARAMS                                                 *ddc-source-zsh-params*
+PARAMS                                       *ddc-source-shell-capture-params*
 
-                                                   *ddc-source-zsh-param-envs*
+                                         *ddc-source-shell-capture-param-envs*
+shell		(string)
+		A required parameter to specify the shell to be used.
+		Supported values are fish, xonsh, and zsh. Note that Zsh
+		saves compdump file in `$DEOPLETE_ZSH_CACHE_DIR` or
+		`$XDG_CACHE_HOME` or `$HOME/cache` directory.
+
 envs		(Record<string, string>)
-		The environment variables to be passed to zsh.
+		The environment variables to be passed to shell.
 
 
 ==============================================================================
-EXAMPLES                                             *ddc-source-zsh-examples*
+EXAMPLES                                   *ddc-source-shell-capture-examples*
 >
-	call ddc#custom#patch_global('sources', ['zsh'])
+	call ddc#custom#patch_global('sources', ['shell-capture'])
 	call ddc#custom#patch_global('sourceOptions', {
-	      \   'zsh': #{ mark: 'Z' },
+	      \   'shell-capture': #{ shell: 'fish', mark: 'fish' },
 	      \ })
 <
 

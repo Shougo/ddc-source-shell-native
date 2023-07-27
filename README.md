@@ -1,6 +1,6 @@
-# ddc-source-zsh
+# ddc-source-shell-capture
 
-Zsh completion for ddc.vim
+Shell builtin completion for ddc.vim
 
 ## Required
 
@@ -12,21 +12,20 @@ https://github.com/vim-denops/denops.vim
 
 https://github.com/Shougo/ddc.vim
 
-### zsh and zsh/zpty module
+### shell
 
-```zsh
-zmodload zsh/zpty
-```
+One of the followings
+
+- fish
+- xonsh
+- zsh and zsh/zpty module
 
 ## Configuration
 
-It saves compdump file in `$DEOPLETE_ZSH_CACHE_DIR` or `$XDG_CACHE_HOME` or
-`$HOME/cache` directory.
-
 ```vim
-call ddc#custom#patch_global('sources', ['zsh'])
-call ddc#custom#patch_global('sourceOptions', #{
-      \   zsh: #{ mark: 'Z' },
+call ddc#custom#patch_global('sources', ['shell-capture'])
+call ddc#custom#patch_global('sourceOptions', {
+      \   'shell-capture': #{ shell: 'fish', mark: 'fish' },
       \ })
 ```
 
