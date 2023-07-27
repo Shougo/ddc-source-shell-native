@@ -1,0 +1,5 @@
+#!/usr/bin/env xonsh
+
+import xonsh.completer
+for i in xonsh.completer.Completer().complete("", "", 0, 0, {}, multiline_text="git ch", cursor_index=6)[0]:
+  print(i)
