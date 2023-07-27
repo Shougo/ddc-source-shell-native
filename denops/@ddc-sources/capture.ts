@@ -8,6 +8,7 @@ import { TextLineStream } from "https://deno.land/std@0.195.0/streams/mod.ts";
 
 type Params = {
   envs: Record<string, string>;
+  shell: string;
 };
 
 export class Source extends BaseSource<Params> {
@@ -32,7 +33,9 @@ export class Source extends BaseSource<Params> {
     context: Context;
     sourceParams: Params;
   }): Promise<Item[]> {
-    if (!this._existsZsh) {
+    const shell = args.sourceParams.shell;
+
+    if (shell === "" || await fn.executable(args.denops, shell) === 0) {
       return [];
     }
 
@@ -40,7 +43,7 @@ export class Source extends BaseSource<Params> {
     const capture = await args.denops.call(
       "globpath",
       runtimepath,
-      "bin/capture.zsh",
+      `bin/capture.${shell}`,
       1,
       1,
     ) as string[];
@@ -58,10 +61,8 @@ export class Source extends BaseSource<Params> {
       input = input.slice(1);
     }
 
-    const cmd = "zsh";
-
     const proc = new Deno.Command(
-      cmd,
+      shell,
       {
         args: [capture[0], input],
         stdout: "piped",
@@ -92,8 +93,15 @@ export class Source extends BaseSource<Params> {
       stdout.push(line);
     }
 
+    const delimiter = {
+      zsh: " -- ",
+      fish: "\t",
+    }[shell] ?? "";
     const items = stdout.map((line) => {
-      const pieces = line.split(" -- ");
+      if (delimiter === "") {
+        return { word: line };
+      }
+      const pieces = line.split(delimiter);
       return pieces.length <= 1
         ? { word: line }
         : { word: pieces[0], info: pieces[1] };
@@ -106,7 +114,7 @@ export class Source extends BaseSource<Params> {
 
       await args.denops.call(
         "ddc#util#print_error",
-        `Run ${cmd} is failed with exit code ${s.code}.`,
+        `Run ${shell} is failed with exit code ${s.code}.`,
       );
       const err = [];
       for await (const line of iterLine(proc.stderr)) {
@@ -124,6 +132,7 @@ export class Source extends BaseSource<Params> {
   override params(): Params {
     return {
       envs: {},
+      shell: "",
     };
   }
 }
