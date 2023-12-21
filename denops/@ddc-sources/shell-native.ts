@@ -15,7 +15,7 @@ export class Source extends BaseSource<Params> {
   override getCompletePosition(args: {
     context: Context;
   }): Promise<number> {
-    const matchPos = args.context.input.search(/\S+$/);
+    const matchPos = args.context.input.search(/\S*$/);
     const completePos = matchPos !== null ? matchPos : -1;
     return Promise.resolve(completePos);
   }
