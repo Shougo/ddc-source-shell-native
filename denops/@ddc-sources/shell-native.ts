@@ -2,9 +2,10 @@ import {
   BaseSource,
   Context,
   Item,
-} from "https://deno.land/x/ddc_vim@v3.9.1/types.ts";
-import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v3.9.1/deps.ts";
-import { TextLineStream } from "https://deno.land/std@0.195.0/streams/mod.ts";
+} from "https://deno.land/x/ddc_vim@v5.0.0/types.ts";
+import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v5.0.0/deps.ts";
+import { printError } from "https://deno.land/x/ddc_vim@v5.0.0/utils.ts";
+import { TextLineStream } from "https://deno.land/std@0.222.1/streams/mod.ts";
 
 type Params = {
   envs: Record<string, string>;
@@ -105,16 +106,16 @@ export class Source extends BaseSource<Params> {
         return;
       }
 
-      await args.denops.call(
-        "ddc#util#print_error",
+      await printError(
+        args.denops,
         `Run ${shell} is failed with exit code ${s.code}.`,
       );
       const err = [];
       for await (const line of iterLine(proc.stderr)) {
         err.push(line);
       }
-      await args.denops.call(
-        "ddc#util#print_error",
+      await printError(
+        args.denops,
         err.join("\n"),
       );
     });
