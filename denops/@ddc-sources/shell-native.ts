@@ -5,7 +5,7 @@ import {
 } from "https://deno.land/x/ddc_vim@v5.0.0/types.ts";
 import { Denops, fn, op } from "https://deno.land/x/ddc_vim@v5.0.0/deps.ts";
 import { printError } from "https://deno.land/x/ddc_vim@v5.0.0/utils.ts";
-import { TextLineStream } from "https://deno.land/std@0.222.1/streams/mod.ts";
+import { TextLineStream } from "jsr:@std/streams@0.224.0";
 
 type Params = {
   envs: Record<string, string>;
