@@ -1,15 +1,12 @@
-import {
-  BaseSource,
-  type Context,
-  type Item,
-} from "jsr:@shougo/ddc-vim@6.0.0/types";
-import { printError } from "jsr:@shougo/ddc-vim@6.0.0/utils";
+import { type Context, type Item } from "jsr:@shougo/ddc-vim@~7.0.0/types";
+import { BaseSource } from "jsr:@shougo/ddc-vim@~7.0.0/source";
+import { printError } from "jsr:@shougo/ddc-vim@~7.0.0/utils";
 
-import type { Denops } from "jsr:@denops/core@^7.0.0";
-import * as fn from "jsr:@denops/std@7.0.1/function";
-import * as op from "jsr:@denops/std@7.0.1/option";
+import type { Denops } from "jsr:@denops/core@~7.0.0";
+import * as fn from "jsr:@denops/std@~7.1.1/function";
+import * as op from "jsr:@denops/std@~7.1.1/option";
 
-import { TextLineStream } from "jsr:@std/streams@1.0.0";
+import { TextLineStream } from "jsr:@std/streams@~1.0.3/text-line-stream";
 
 type Params = {
   envs: Record<string, string>;
