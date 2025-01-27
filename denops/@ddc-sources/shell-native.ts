@@ -95,6 +95,9 @@ export class Source extends BaseSource<Params> {
         replaceLine = false;
       }
 
+      // Replace the last //.
+      line = line.replace(/\/\/$/, "/");
+
       stdout.push(line);
     }
 
