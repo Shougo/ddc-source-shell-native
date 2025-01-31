@@ -1,4 +1,4 @@
-import { type Context, type Item } from "jsr:@shougo/ddc-vim@~9.1.0/types";
+import type { Context, DdcGatherItems } from "jsr:@shougo/ddc-vim@~9.1.0/types";
 import { BaseSource } from "jsr:@shougo/ddc-vim@~9.1.0/source";
 import { printError } from "jsr:@shougo/ddc-vim@~9.1.0/utils";
 
@@ -15,6 +15,27 @@ type Params = {
 };
 
 export class Source extends BaseSource<Params> {
+  #captures: string[] = [];
+
+  override async onInit(args: {
+    denops: Denops;
+    sourceParams: Params;
+  }) {
+    const shell = args.sourceParams.shell;
+    if (shell === "" || await fn.executable(args.denops, shell) === 0) {
+      return;
+    }
+
+    const runtimepath = await op.runtimepath.getGlobal(args.denops);
+    this.#captures = await args.denops.call(
+      "globpath",
+      runtimepath,
+      `bin/capture.${shell}`,
+      1,
+      1,
+    ) as string[];
+  }
+
   override getCompletePosition(args: {
     context: Context;
   }): Promise<number> {
@@ -26,23 +47,10 @@ export class Source extends BaseSource<Params> {
   override async gather(args: {
     denops: Denops;
     context: Context;
+    completeStr: string;
     sourceParams: Params;
-  }): Promise<Item[]> {
-    const shell = args.sourceParams.shell;
-
-    if (shell === "" || await fn.executable(args.denops, shell) === 0) {
-      return [];
-    }
-
-    const runtimepath = await op.runtimepath.getGlobal(args.denops);
-    const capture = await args.denops.call(
-      "globpath",
-      runtimepath,
-      `bin/capture.${shell}`,
-      1,
-      1,
-    ) as string[];
-    if (capture.length < 0) {
+  }): Promise<DdcGatherItems> {
+    if (this.#captures.length < 0) {
       return [];
     }
 
@@ -66,76 +74,86 @@ export class Source extends BaseSource<Params> {
       input = input.slice(1);
     }
 
-    const proc = new Deno.Command(
-      shell,
-      {
-        args: [capture[0], input],
-        stdout: "piped",
-        stderr: "piped",
-        stdin: "null",
-        cwd: await fn.getcwd(args.denops) as string,
-        env: args.sourceParams.envs,
-      },
-    ).spawn();
+    const gatherItems = async () => {
+      const proc = new Deno.Command(
+        args.sourceParams.shell,
+        {
+          args: [this.#captures[0], input],
+          stdout: "piped",
+          stderr: "piped",
+          stdin: "null",
+          cwd: await fn.getcwd(args.denops) as string,
+          env: args.sourceParams.envs,
+        },
+      ).spawn();
 
-    // NOTE: In Vim, await command.output() does not work.
-    const stdout = [];
-    let replaceLine = true;
-    for await (let line of iterLine(proc.stdout)) {
-      if (line.length === 0) {
-        continue;
-      }
-
-      if (replaceLine) {
-        // NOTE: Replace the first line.  It may includes garbage texts.
-        line = line.replace(/\r\r.*\[J/, "");
-        if (line.startsWith(input)) {
-          line = line.slice(input.length);
+      // NOTE: In Vim, await command.output() does not work.
+      const stdout = [];
+      let replaceLine = true;
+      for await (let line of iterLine(proc.stdout)) {
+        if (line.length === 0) {
+          continue;
         }
-        replaceLine = false;
+
+        if (replaceLine) {
+          // NOTE: Replace the first line.  It may includes garbage texts.
+          line = line.replace(/\r\r.*\[J/, "");
+          if (line.startsWith(input)) {
+            line = line.slice(input.length);
+          }
+          replaceLine = false;
+        }
+
+        // Replace the last //.
+        line = line.replace(/\/\/$/, "/");
+
+        stdout.push(line);
       }
 
-      // Replace the last //.
-      line = line.replace(/\/\/$/, "/");
+      const delimiter = {
+        zsh: " -- ",
+        fish: "\t",
+      }[args.sourceParams.shell] ?? "";
 
-      stdout.push(line);
-    }
+      const items = stdout.map((line) => {
+        if (delimiter === "") {
+          return { word: line };
+        }
+        const pieces = line.split(delimiter);
+        return pieces.length <= 1
+          ? { word: line }
+          : { word: pieces[0], info: pieces[1] };
+      });
 
-    const delimiter = {
-      zsh: " -- ",
-      fish: "\t",
-    }[shell] ?? "";
+      proc.status.then(async (s) => {
+        if (s.success) {
+          return;
+        }
 
-    const items = stdout.map((line) => {
-      if (delimiter === "") {
-        return { word: line };
-      }
-      const pieces = line.split(delimiter);
-      return pieces.length <= 1
-        ? { word: line }
-        : { word: pieces[0], info: pieces[1] };
-    });
+        await printError(
+          args.denops,
+          `Run ${args.sourceParams.shell} is failed with exit code ${s.code}.`,
+        );
+        const err = [];
+        for await (const line of iterLine(proc.stderr)) {
+          err.push(line);
+        }
+        await printError(
+          args.denops,
+          err.join("\n"),
+        );
+      });
 
-    proc.status.then(async (s) => {
-      if (s.success) {
-        return;
-      }
+      // Update items later.
+      await args.denops.call("ddc#update_items", this.name, items);
+    };
 
-      await printError(
-        args.denops,
-        `Run ${shell} is failed with exit code ${s.code}.`,
-      );
-      const err = [];
-      for await (const line of iterLine(proc.stderr)) {
-        err.push(line);
-      }
-      await printError(
-        args.denops,
-        err.join("\n"),
-      );
-    });
+    gatherItems();
 
-    return items;
+    return {
+      isIncomplete: true,
+      items: [],
+    };
   }
 
   override params(): Params {
