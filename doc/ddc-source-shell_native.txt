@@ -1,25 +1,25 @@
-*ddc-source-shell-native.txt*	Native shell completion for ddc.vim
+*ddc-source-shell_native.txt*	Native shell completion for ddc.vim
 
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
-CONTENTS                                    *ddc-source-shell-native-contents*
+CONTENTS                                    *ddc-source-shell_native-contents*
 
-Introduction		|ddc-source-shell-native-introduction|
-Install			|ddc-source-shell-native-install|
-Params			|ddc-source-shell-native-params|
-Examples		|ddc-source-shell-native-examples|
+Introduction		|ddc-source-shell_native-introduction|
+Install			|ddc-source-shell_native-install|
+Params			|ddc-source-shell_native-params|
+Examples		|ddc-source-shell_native-examples|
 
 
 ==============================================================================
-INTRODUCTION                            *ddc-source-shell-native-introduction*
+INTRODUCTION                            *ddc-source-shell_native-introduction*
 
 This source captures items from native completion of shells (fish, xonsh, or
 zsh).
 
 
 ==============================================================================
-INSTALL                                      *ddc-source-shell-native-install*
+INSTALL                                      *ddc-source-shell_native-install*
 
 Please install both "ddc.vim" and "denops.vim".
 
@@ -33,9 +33,9 @@ NOTE: Zsh also requires enable "zsh/zpty" module.
 <
 
 ==============================================================================
-PARAMS                                        *ddc-source-shell-native-params*
+PARAMS                                        *ddc-source-shell_native-params*
 
-                                         *ddc-source-shell-native-param-shell*
+                                         *ddc-source-shell_native-param-shell*
 shell		(string)
 		A required parameter to specify the shell to be used.
 		Supported values are fish, xonsh, and zsh.
@@ -45,23 +45,23 @@ shell		(string)
 
 		Default: ""
 
-                                          *ddc-source-shell-native-param-envs*
+                                          *ddc-source-shell_native-param-envs*
 envs		(Record<string, string>)
 		The environment variables to be passed to
-		|ddc-source-shell-native-param-shell|.
+		|ddc-source-shell_native-param-shell|.
 
 		Default: {}
 
 
 ==============================================================================
-EXAMPLES                                    *ddc-source-shell-native-examples*
+EXAMPLES                                    *ddc-source-shell_native-examples*
 >vim
-	call ddc#custom#patch_global('sources', ['shell-native'])
-	call ddc#custom#patch_global('sourceOptions', {
-	      \   "shell-native": #{ mark: 'fish' },
+	call ddc#custom#patch_global('sources', ['shell_native'])
+	call ddc#custom#patch_global('sourceOptions', #{
+	      \   shell_native: #{ mark: 'fish' },
 	      \ })
-	call ddc#custom#patch_global('sourceParams', {
-	      \   "shell-native": #{ shell: 'fish' },
+	call ddc#custom#patch_global('sourceParams', #{
+	      \   shell_native: #{ shell: 'fish' },
 	      \ })
 <
 

@@ -1,4 +1,4 @@
-# ddc-source-shell-native
+# ddc-source-shell_native
 
 Shell native completion for ddc.vim
 
@@ -23,12 +23,12 @@ One of the followings
 ## Configuration
 
 ```vim
-call ddc#custom#patch_global('sources', ['shell-native'])
+call ddc#custom#patch_global('sources', ['shell_native'])
 call ddc#custom#patch_global('sourceOptions', #{
-      \   shell-native: #{ mark: 'fish' },
+      \   shell_native: #{ mark: 'fish' },
       \ })
 call ddc#custom#patch_global('sourceParams', #{
-      \   shell-native: #{ shell: 'fish' },
+      \   shell_native: #{ shell: 'fish' },
       \ })
 ```
 
