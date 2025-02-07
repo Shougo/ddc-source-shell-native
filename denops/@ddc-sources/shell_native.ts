@@ -74,86 +74,76 @@ export class Source extends BaseSource<Params> {
       input = input.slice(1);
     }
 
-    const gatherItems = async () => {
-      const proc = new Deno.Command(
-        args.sourceParams.shell,
-        {
-          args: [this.#captures[0], input],
-          stdout: "piped",
-          stderr: "piped",
-          stdin: "null",
-          cwd: await fn.getcwd(args.denops) as string,
-          env: args.sourceParams.envs,
-        },
-      ).spawn();
+    const proc = new Deno.Command(
+      args.sourceParams.shell,
+      {
+        args: [this.#captures[0], input],
+        stdout: "piped",
+        stderr: "piped",
+        stdin: "null",
+        cwd: await fn.getcwd(args.denops) as string,
+        env: args.sourceParams.envs,
+      },
+    ).spawn();
 
-      // NOTE: In Vim, await command.output() does not work.
-      const stdout = [];
-      let replaceLine = true;
-      for await (let line of iterLine(proc.stdout)) {
-        if (line.length === 0) {
-          continue;
-        }
-
-        if (replaceLine) {
-          // NOTE: Replace the first line.  It may includes garbage texts.
-          line = line.replace(/\r\r.*\[J/, "");
-          if (line.startsWith(input)) {
-            line = line.slice(input.length);
-          }
-          replaceLine = false;
-        }
-
-        // Replace the last //.
-        line = line.replace(/\/\/$/, "/");
-
-        stdout.push(line);
+    // NOTE: In Vim, await command.output() does not work.
+    const stdout = [];
+    let replaceLine = true;
+    for await (let line of iterLine(proc.stdout)) {
+      if (line.length === 0) {
+        continue;
       }
 
-      const delimiter = {
-        zsh: " -- ",
-        fish: "\t",
-      }[args.sourceParams.shell] ?? "";
-
-      const items = stdout.map((line) => {
-        if (delimiter === "") {
-          return { word: line };
+      if (replaceLine) {
+        // NOTE: Replace the first line.  It may includes garbage texts.
+        line = line.replace(/\r\r.*\[J/, "");
+        if (line.startsWith(input)) {
+          line = line.slice(input.length);
         }
-        const pieces = line.split(delimiter);
-        return pieces.length <= 1
-          ? { word: line }
-          : { word: pieces[0], info: pieces[1] };
-      });
+        replaceLine = false;
+      }
 
-      proc.status.then(async (s) => {
-        if (s.success) {
-          return;
-        }
+      // Replace the last //.
+      line = line.replace(/\/\/$/, "/");
 
-        await printError(
-          args.denops,
-          `Run ${args.sourceParams.shell} is failed with exit code ${s.code}.`,
-        );
-        const err = [];
-        for await (const line of iterLine(proc.stderr)) {
-          err.push(line);
-        }
-        await printError(
-          args.denops,
-          err.join("\n"),
-        );
-      });
+      stdout.push(line);
+    }
 
-      // Update items later.
-      await args.denops.call("ddc#update_items", this.name, items);
-    };
+    const delimiter = {
+      zsh: " -- ",
+      fish: "\t",
+    }[args.sourceParams.shell] ?? "";
 
-    gatherItems();
+    const items = stdout.map((line) => {
+      if (delimiter === "") {
+        return { word: line };
+      }
+      const pieces = line.split(delimiter);
+      return pieces.length <= 1
+        ? { word: line }
+        : { word: pieces[0], info: pieces[1] };
+    });
 
-    return {
-      isIncomplete: true,
-      items: [],
-    };
+    proc.status.then(async (s) => {
+      if (s.success) {
+        return;
+      }
+
+      await printError(
+        args.denops,
+        `Run ${args.sourceParams.shell} is failed with exit code ${s.code}.`,
+      );
+      const err = [];
+      for await (const line of iterLine(proc.stderr)) {
+        err.push(line);
+      }
+      await printError(
+        args.denops,
+        err.join("\n"),
+      );
+    });
+
+    return items;
   }
 
   override params(): Params {
